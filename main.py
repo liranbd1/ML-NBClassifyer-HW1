@@ -14,7 +14,7 @@ import ClassifyNB as nb
 def main():
     Pw, P = learn_NB_text()
     suc = nb.ClassifyNB_text(Pw, P)
-    print(suc)
+    print("the success rate is: {0}".format(suc))
 
     
 #    generate_words_dic(voc)

@@ -7,7 +7,7 @@ text_by_category = {}
 words_count = {}
 labels_prob = {}
 
-def calculate_p_v_j(docs, examples):
+def calculate_priors(docs, examples):
     return len(docs) / len(examples)
 
 def calculate_p_w_k_given_v_j( volcabolary, words_counter, labels):
@@ -35,7 +35,7 @@ def learn_NB_text():
         for index in range(len(lbAll)):
             if category == lbAll[index]:
                 docs.append(texAll[index])
-        labels_prob[category] = calculate_p_v_j(docs, texAll)
+        labels_prob[category] = calculate_priors(docs, texAll)
         text_by_category[category] = concatinate_text(docs) 
     
     for key in text_by_category.keys():

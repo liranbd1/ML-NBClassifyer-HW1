@@ -4,7 +4,6 @@ from Classifyer import ClassifyNB_text
 
 
 def main():
-    t = time.time()
     Pw, P = learn_NB_text()
     suc = ClassifyNB_text(Pw, P)
     print("the success rate is: {0}".format(suc))

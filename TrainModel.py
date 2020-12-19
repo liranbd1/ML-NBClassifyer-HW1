@@ -42,5 +42,3 @@ def learn_NB_text():
     model.VOC = all_words # Saving global variables in a different file to used and comapre in the test data (Not passing over data we didn't train for)
     model.LABELS = all_labels
     return calc_p_w(all_words, word_counter, all_labels), calc_priors(all_labels, train_label)
-
-    

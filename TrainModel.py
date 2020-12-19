@@ -1,49 +1,46 @@
 from readTrainData import * 
-import numpy as np
 from collections import Counter
 import Model as model
 
-text_by_category = {}
-words_count = {}
-labels_prob = {}
+# iteration over words or labels is done by looping over the vocabolary set and the category set respectavily (shorter loop - better performances)
 
-def calculate_priors(docs, examples):
-    return len(docs) / len(examples)
+# Calculating the priors of each label
+def calc_priors(labels, train_data):
+    priors = {}
+    train_size = len(train_data) # The total size of the train data
+    for label in labels: 
+        occurences = train_data.count(label) # number of times we are seeing this label in the train data
+        priors[label] = occurences/train_size # P(v_j)
+    return priors
 
-def calculate_p_w_k_given_v_j( volcabolary, words_counter, labels):
-    for k in range(len(volcabolary)):
-        for j in range(len(labels)):
-            n = len(text_by_category[labels[j]])
-            n_k = words_counter[labels[j]][volcabolary[k]]
-            model.WORD_LABEL_PROB[k,j] = (n_k + 1)/ (n+ len(volcabolary))
-        
-def concatinate_text(docs):
-    concatined_text_list = list()
-    for text_list in docs:
-        concatined_text_list = concatined_text_list + text_list
-    return concatined_text_list
+# Return a nested dictionary where top layer is by label key and lower layer is key by word, the final value is the 
+# number of times word_k appeared in text_j (which is baiscally only the label)
+def count_text_words(all_labels, train_labels, train_text):
+    words_counter = {}
+    for label in all_labels:
+        texts = []
+        index_list = [index for index, value in enumerate(train_labels) if value == label]
+        for index in index_list:
+            texts.extend(train_text[index])
+        words_counter[label] = Counter(texts)
+    return words_counter
 
+# Return a dictionary where key is the tuple label, word and value is P(w_k|v_j)
+def calc_p_w(all_words, words_counter, all_labels): 
+    p_w = {}
+    for label in all_labels:
+        for word in all_words:
+            n_k = words_counter[label][word]
+            n = sum(words_counter[label].values())
+            p_w[(label ,word)] = (n_k+1) / (n + len(all_words))
+    return p_w
+
+# Starting the learn process.
 def learn_NB_text():
-    texAll, lbAll, voc, cat = readTrainData("r8-train-stemmed.txt")
-    voc_list = list(voc)
-    cat_list = list(cat)
-    model.VOC = np.array(voc_list)
-    model.LABELS = np.array(cat_list)
-    model.WORD_LABEL_PROB = np.zeros((len(voc), len(cat)))
-    for category in model.LABELS:
-        docs = list()
-        for index in range(len(lbAll)):
-            if category == lbAll[index]:
-                docs.append(texAll[index])
-        labels_prob[category] = calculate_priors(docs, texAll)
-        text_by_category[category] = concatinate_text(docs) 
+    train_text, train_label, all_words, all_labels = readTrainData("r8-train-stemmed.txt")
+    word_counter = count_text_words(all_labels, train_label, train_text)
+    model.VOC = all_words # Saving global variables in a different file to used and comapre in the test data (Not passing over data we didn't train for)
+    model.LABELS = all_labels
+    return calc_p_w(all_words, word_counter, all_labels), calc_priors(all_labels, train_label)
+
     
-    for key in text_by_category.keys():
-        words_count[key] = Counter(text_by_category[key])
-    
-    calculate_p_w_k_given_v_j(model.VOC, words_count, model.LABELS)
-    model.LABEL_PROB = np.zeros(len(model.LABELS))
-    for index in range(model.LABELS.size):
-        model.LABEL_PROB[index] = labels_prob[model.LABELS[index]]
-        
-    return model.WORD_LABEL_PROB, model.LABEL_PROB

@@ -1,7 +1,8 @@
-from TrainModel import learn_NB_text
-import Model as models
-from Classifyer import ClassifyNB_text
+# Liran Ben David - 308025444
+# Roei Shenfeld - 206857955
 
+from TrainModel import learn_NB_text
+from Classifyer import ClassifyNB_text
 
 def main():
     Pw, P = learn_NB_text()

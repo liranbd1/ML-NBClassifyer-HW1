@@ -1,3 +1,6 @@
+# Liran Ben David - 308025444
+# Roei Shenfeld - 206857955
+
 from readTrainData import * 
 from collections import Counter
 import Model as model

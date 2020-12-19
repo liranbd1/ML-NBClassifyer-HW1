@@ -1,3 +1,6 @@
+# Liran Ben David - 308025444
+# Roei Shenfeld - 206857955
+
 import readTestData as rtd
 import numpy as np
 import Model as md
